@@ -9,10 +9,6 @@ import (
 	"log"
 	"golang.org/x/net/html"
 	"strings"
-	//"bytes"
-	//"io"
-	//"text/template"
-	//"strconv"
 )
 
 func main() {
@@ -32,10 +28,8 @@ func main() {
 }
 
 var users []User
-var user User
 var user_profile_link string
 var user_name string
-//var ind = 0
 
 type User struct {
 	ProfileLink string
@@ -46,15 +40,11 @@ type User struct {
 }
 
 func generateUsersData(node *html.Node) {
-	fmt.Println("loopout")
-	if node.Type == html.ElementNode && node.Data == "a" && len(node.Attr) == 2 {
-		//fmt.Println(node.Attr[1])
+	if node.Type == html.ElementNode && node.Data == "a" && len(node.Attr) >= 2 {
 		if node.Attr[1].Key == "class" && node.Attr[1].Val == "user" {
-			fmt.Println("loop")
-			user_profile_link = node.Attr[0].Val
+			user_profile_link = "https://www.nairaland.com" + node.Attr[0].Val
 			user_name = node.FirstChild.Data
-			user = User{user_profile_link, user_name}
-			users = append(users, user)
+			users = append(users, User{user_profile_link, user_name})
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
