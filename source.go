@@ -52,6 +52,7 @@ func main() {
 	}
 	page.Body.Close()
 	generateUniqueUsers()
+	fmt.Println("Total number of profile collected from thread:", len(users))
 	for i, val := range users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
