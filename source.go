@@ -11,6 +11,7 @@ import (
 	"strings"
 	"encoding/csv"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -21,14 +22,35 @@ func main() {
 	if link == "" {
 		link = "https://www.nairaland.com/7243961/christian-how-often-pray"
 	}
-	page, err := http.Get(link)
-	logError(err)
-	pagetext, err := ioutil.ReadAll(page.Body)
-	logError(err)
-	text := string(pagetext)
-	doc, err := html.Parse(strings.NewReader(text))
-	logError(err)
-	generateUsersData(doc)
+	link0 := link
+	var page *http.Response
+	var pageTrack *http.Response
+	var err error
+	//var pages []*http.Response
+	var pagetext []byte
+	var text string
+	var doc *html.Node
+	x := 1
+	for {
+		page, err = http.Get(link)
+		logError(err)
+		pagetext, err = ioutil.ReadAll(page.Body)
+		logError(err)
+		text = string(pagetext)
+		doc, err = html.Parse(strings.NewReader(text))
+		logError(err)
+		generateUsersData(doc)
+		fmt.Println("The processing of the webpage at", page.Request.URL.Path, "was successful!")
+		if pageTrack == nil {
+			// do nothing
+		} else if page.Request.URL.Path == pageTrack.Request.URL.Path || x == 10000 {
+			break
+		}
+		link = link0 + "/" + strconv.Itoa(x)
+		//pages = append(pages, page)
+		pageTrack = page
+		x++
+	}
 	page.Body.Close()
 	generateUniqueUsers()
 	//
