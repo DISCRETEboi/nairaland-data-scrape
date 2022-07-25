@@ -25,6 +25,7 @@ func main() {
 	link0 := link
 	var page *http.Response
 	var pageTrack *http.Response
+	var ppage *http.Response
 	var err error
 	var pagetext []byte
 	var text string
@@ -33,6 +34,11 @@ func main() {
 	for {
 		page, err = http.Get(link)
 		logError(err)
+		if pageTrack == nil {
+			// do nothing
+		} else if page.Request.URL.Path == pageTrack.Request.URL.Path || x == 10000 {
+			break
+		}
 		pagetext, err = ioutil.ReadAll(page.Body)
 		logError(err)
 		text = string(pagetext)
@@ -40,11 +46,6 @@ func main() {
 		logError(err)
 		generateUsersData(doc)
 		fmt.Println("The processing of the webpage at", page.Request.URL.Path, "was successful!")
-		if pageTrack == nil {
-			// do nothing
-		} else if page.Request.URL.Path == pageTrack.Request.URL.Path || x == 10000 {
-			break
-		}
 		link = link0 + "/" + strconv.Itoa(x)
 		pageTrack = page
 		x++
@@ -54,15 +55,19 @@ func main() {
 	for i, val := range users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
-		page, err = http.Get(link)
-		logError(err)
-		pagetext, err = ioutil.ReadAll(page.Body)
+		ppage, err = http.Get(link)
+		if err != nil {
+			fmt.Println("Error processing profile at index", i+1, "[", err, "]")
+			continue
+		}
+		pagetext, err = ioutil.ReadAll(ppage.Body)
 		logError(err)
 		text = string(pagetext)
 		doc, err = html.Parse(strings.NewReader(text))
 		logError(err)
 		generateProfileData(doc, i)
 	}
+	ppage.Body.Close()
 	data := structToSlice(users)
 	file, err := os.Create("first-go-csv.csv")
 	logError(err)
@@ -100,17 +105,17 @@ func generateUsersData(node *html.Node) {
 
 func generateProfileData(node *html.Node, ind int) {
 	if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Location" {
-		users[ind].Location = node.NextSibling.Data[2:]
+		users[ind].Location = node.NextSibling.Data[2: ]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time registered" {
-		users[ind].TimeRegistered = node.NextSibling.Data[2:]
+		users[ind].TimeRegistered = node.NextSibling.Data[2: ]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Last seen" {
 		if node.NextSibling.NextSibling.NextSibling != nil {
-			users[ind].LastSeen = node.NextSibling.Data +
+			users[ind].LastSeen = (node.NextSibling.Data +
 				node.NextSibling.NextSibling.FirstChild.Data +
 				node.NextSibling.NextSibling.NextSibling.Data +
-				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data
+				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data)[2: ]
 		} else {
-			users[ind].LastSeen = node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data
+			users[ind].LastSeen = (node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data)[2: ]
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
