@@ -88,6 +88,10 @@ type User struct {
 	Location string
 	TimeRegistered string
 	LastSeen string
+	PersonalText string
+	Gender string
+	Twitter string
+	TimeSpentOnline string
 }
 
 func generateUsersData(node *html.Node) {
@@ -95,7 +99,7 @@ func generateUsersData(node *html.Node) {
 		if node.Attr[1].Key == "class" && node.Attr[1].Val == "user" {
 			user_profile_link = "https://www.nairaland.com" + node.Attr[0].Val
 			user_name = node.FirstChild.Data
-			users = append(users, User{user_profile_link, user_name, "", "", ""})
+			users = append(users, User{user_profile_link, user_name, "", "", "", "", "", "", ""})
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
@@ -117,6 +121,14 @@ func generateProfileData(node *html.Node, ind int) {
 		} else {
 			users[ind].LastSeen = (node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data)[2: ]
 		}
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Personal text" {
+		users[ind].PersonalText = node.NextSibling.Data[2: ]
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Gender" {
+		users[ind].Gender = node.NextSibling.Data[2: ]
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Twitter" {
+		users[ind].Twitter = node.NextSibling.Data[2: ]
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time spent online" {
+		users[ind].TimeSpentOnline = node.NextSibling.Data[2: ]
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
 		generateProfileData(i, ind)
@@ -151,9 +163,9 @@ func logError(err error) {
 }
 
 func structToSlice(sliceOfStructs []User) [][]string {
-	slice := [][]string{{"name", "profile_link", "location", "time_registered", "last_seen"}}
+	slice := [][]string{{"name", "profile_link", "location", "time_registered", "last_seen", "personal_text", "gender", "twitter", "time_spent_online"}}
 	for _, i := range sliceOfStructs {
-		slice = append(slice, []string{i.Name, i.ProfileLink, i.Location, i.TimeRegistered, i.LastSeen})
+		slice = append(slice, []string{i.Name, i.ProfileLink, i.Location, i.TimeRegistered, i.LastSeen, i.PersonalText, i.Gender, i.Twitter, i.TimeSpentOnline})
 	}
 	return slice
 }
