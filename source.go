@@ -15,8 +15,12 @@ import (
 
 func main() {
 	var link string
-	fmt.Print("Enter a thread link >>> ")
+	fmt.Println("Enter the thread link below (to process a default link, just press Enter)")
+	fmt.Print("Link >>> ")
 	fmt.Scanf("%s", &link)
+	if link == "" {
+		link = "https://www.nairaland.com/7243961/christian-how-often-pray"
+	}
 	page, err := http.Get(link)
 	logError(err)
 	pagetext, err := ioutil.ReadAll(page.Body)
@@ -26,8 +30,10 @@ func main() {
 	logError(err)
 	generateUsersData(doc)
 	page.Body.Close()
+	generateUniqueUsers()
 	//
 	for i, val := range users {
+		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
 		page, err = http.Get(link)
 		logError(err)
@@ -38,8 +44,6 @@ func main() {
 		logError(err)
 		generateProfileData(doc, i)
 	}
-	//fmt.Println(users)
-	//data := [][]string{{"a", "b", "c"}, {"1", "2", "3"}, {"x", "y", "z"}}
 	data := structToSlice(users)
 	file, err := os.Create("first-go-csv.csv")
 	logError(err)
@@ -75,28 +79,43 @@ func generateUsersData(node *html.Node) {
 
 func generateProfileData(node *html.Node, ind int) {
 	if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Location" {
-		fmt.Println(node.NextSibling.Data)
 		users[ind].Location = node.NextSibling.Data[2:]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time registered" {
-		fmt.Println(node.NextSibling.Data)
 		users[ind].TimeRegistered = node.NextSibling.Data[2:]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Last seen" {
 		if node.NextSibling.NextSibling.NextSibling != nil {
-			fmt.Println(ind, users[ind].Name, node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data +
-				node.NextSibling.NextSibling.NextSibling.Data +
-				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data)
 			users[ind].LastSeen = node.NextSibling.Data +
 				node.NextSibling.NextSibling.FirstChild.Data +
 				node.NextSibling.NextSibling.NextSibling.Data +
 				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data
 		} else {
-			fmt.Println(ind, users[ind].Name, node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data)
 			users[ind].LastSeen = node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
 		generateProfileData(i, ind)
 	}
+}
+
+func generateUniqueUsers() {
+	unique_users := []User{}
+	for _, val := range users {
+		if sliceContains(unique_users, val) {
+			// do nothing
+		} else {
+			unique_users = append(unique_users, val)
+		}
+	}
+	users = unique_users
+}
+
+func sliceContains(suser []User, user User) bool {
+    for _, a := range suser {
+        if a.ProfileLink == user.ProfileLink {
+            return true
+        }
+    }
+    return false
 }
 
 func logError(err error) {
