@@ -26,7 +26,19 @@ func main() {
 	logError(err)
 	generateUsersData(doc)
 	page.Body.Close()
-	fmt.Println(users)
+	//
+	for i, val := range users {
+		link = val.ProfileLink
+		page, err = http.Get(link)
+		logError(err)
+		pagetext, err = ioutil.ReadAll(page.Body)
+		logError(err)
+		text = string(pagetext)
+		doc, err = html.Parse(strings.NewReader(text))
+		logError(err)
+		generateProfileData(doc, i)
+	}
+	//fmt.Println(users)
 	//data := [][]string{{"a", "b", "c"}, {"1", "2", "3"}, {"x", "y", "z"}}
 	data := structToSlice(users)
 	file, err := os.Create("first-go-csv.csv")
@@ -61,8 +73,30 @@ func generateUsersData(node *html.Node) {
 	}
 }
 
-generateProfileData(usersSlice []User) {
-	//
+func generateProfileData(node *html.Node, ind int) {
+	if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Location" {
+		fmt.Println(node.NextSibling.Data)
+		users[ind].Location = node.NextSibling.Data[2:]
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time registered" {
+		fmt.Println(node.NextSibling.Data)
+		users[ind].TimeRegistered = node.NextSibling.Data[2:]
+	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Last seen" {
+		if node.NextSibling.NextSibling.NextSibling != nil {
+			fmt.Println(ind, users[ind].Name, node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data +
+				node.NextSibling.NextSibling.NextSibling.Data +
+				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data)
+			users[ind].LastSeen = node.NextSibling.Data +
+				node.NextSibling.NextSibling.FirstChild.Data +
+				node.NextSibling.NextSibling.NextSibling.Data +
+				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data
+		} else {
+			fmt.Println(ind, users[ind].Name, node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data)
+			users[ind].LastSeen = node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data
+		}
+	}
+	for i := node.FirstChild; i != nil; i = i.NextSibling {
+		generateProfileData(i, ind)
+	}
 }
 
 func logError(err error) {
