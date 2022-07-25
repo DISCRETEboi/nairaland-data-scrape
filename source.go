@@ -26,7 +26,6 @@ func main() {
 	var page *http.Response
 	var pageTrack *http.Response
 	var err error
-	//var pages []*http.Response
 	var pagetext []byte
 	var text string
 	var doc *html.Node
@@ -47,13 +46,11 @@ func main() {
 			break
 		}
 		link = link0 + "/" + strconv.Itoa(x)
-		//pages = append(pages, page)
 		pageTrack = page
 		x++
 	}
 	page.Body.Close()
 	generateUniqueUsers()
-	//
 	for i, val := range users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
@@ -72,6 +69,8 @@ func main() {
 	writer := csv.NewWriter(file)
 	writer.WriteAll(data)
 	file.Close()
+	fmt.Println("A csv file 'first-go-csv.csv' has been written to the current working directory")
+	fmt.Println("DONE! Now, check the csv file :)")
 }
 
 var users []User
