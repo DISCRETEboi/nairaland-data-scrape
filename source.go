@@ -12,6 +12,7 @@ import (
 	"encoding/csv"
 	"os"
 	"strconv"
+	"regexp"
 )
 
 func main() {
@@ -69,6 +70,7 @@ func main() {
 		generateProfileData(doc, i)
 	}
 	ppage.Body.Close()
+	columnsAmend()
 	data := structToSlice(users)
 	file, err := os.Create("first-go-csv.csv")
 	logError(err)
@@ -93,6 +95,9 @@ type User struct {
 	Gender string
 	Twitter string
 	TimeSpentOnline string
+	NoOfPosts string
+	NoOfTopics string
+	//NoOfFollowing string
 }
 
 func generateUsersData(node *html.Node) {
@@ -100,7 +105,7 @@ func generateUsersData(node *html.Node) {
 		if node.Attr[1].Key == "class" && node.Attr[1].Val == "user" {
 			user_profile_link = "https://www.nairaland.com" + node.Attr[0].Val
 			user_name = node.FirstChild.Data
-			users = append(users, User{user_profile_link, user_name, "", "", "", "", "", "", ""})
+			users = append(users, User{user_profile_link, user_name, "", "", "", "", "", "", "", "", ""})
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
@@ -130,6 +135,22 @@ func generateProfileData(node *html.Node, ind int) {
 		users[ind].Twitter = node.NextSibling.Data[2: ]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time spent online" {
 		users[ind].TimeSpentOnline = node.NextSibling.Data[2: ]
+	} else if node.Type == html.ElementNode && node.Data == "a" && node.FirstChild != nil {
+		regex1, _ := regexp.Compile("view " + strings.ToLower(users[ind].Name) + "'s posts \\([0-9]+\\)")
+		regex2, _ := regexp.Compile("view " + strings.ToLower(users[ind].Name) + "'s topics \\([0-9]+\\)")
+		nFDlower := strings.ToLower(node.FirstChild.Data)
+		match1 := regex1.MatchString(nFDlower); match2 := regex2.MatchString(nFDlower)
+		if match1 == true {
+			regex, _ := regexp.Compile("\\([0-9]+\\)")
+			match := regex.FindString(nFDlower)
+			nop := strings.ReplaceAll(match, ")", ""); nop = strings.ReplaceAll(nop, "(", "")
+			users[ind].NoOfPosts = nop
+		} else if match2 == true {
+			regex, _ := regexp.Compile("\\([0-9]+\\)")
+			match := regex.FindString(nFDlower)
+			nop := strings.ReplaceAll(match, ")", ""); nop = strings.ReplaceAll(nop, "(", "")
+			users[ind].NoOfTopics = nop
+		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
 		generateProfileData(i, ind)
@@ -164,14 +185,23 @@ func logError(err error) {
 }
 
 func structToSlice(sliceOfStructs []User) [][]string {
-	slice := [][]string{{"name", "profile_link", "location", "time_registered", "last_seen", "personal_text", "gender", "twitter", "time_spent_online"}}
+	slice := [][]string{{"name", "profile_link", "location", "time_registered", "last_seen", "personal_text", "gender",
+	"twitter", "time_spent_online", "no_of_posts", "no_of_topics"}}
 	for _, i := range sliceOfStructs {
-		slice = append(slice, []string{i.Name, i.ProfileLink, i.Location, i.TimeRegistered, i.LastSeen, i.PersonalText, i.Gender, i.Twitter, i.TimeSpentOnline})
+		slice = append(slice, []string{i.Name, i.ProfileLink, i.Location, i.TimeRegistered, i.LastSeen, i.PersonalText, i.Gender,
+			i.Twitter, i.TimeSpentOnline, i.NoOfPosts, i.NoOfTopics})
 	}
 	return slice
 }
 
-
+func columnsAmend() {
+	//replace all empty fields of 'no_of_topics' with '0'
+	for i, user := range users {
+		if user.NoOfTopics == "" {
+			users[i].NoOfTopics = "0"
+		}
+	}
+}
 
 
 
