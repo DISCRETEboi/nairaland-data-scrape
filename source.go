@@ -17,12 +17,20 @@ import (
 
 func main() {
 	var link string
+	var forumLink string
 	fmt.Println("Enter the thread link below (to process a default link, just press Enter)")
 	fmt.Print("Link >>> ")
 	fmt.Scanf("%s", &link)
 	if link == "" {
 		link = "https://www.nairaland.com/7243961/christian-how-often-pray"
 	}
+	fmt.Print("Also enter forum link >>> ")
+	fmt.Scanf("%s", &forumLink)
+	if forumLink == "" {
+		forumLink = "https://www.nairaland.com/education"
+	}
+	generateThreadLinks(forumLink)
+	fmt.Println(threads)
 	link0 := link
 	var page *http.Response
 	var pageTrack *http.Response
@@ -167,8 +175,41 @@ func generateProfileData(node *html.Node, ind int) {
 	}
 }
 
-func generateThreadLinks(link string) {
+var threads []string
+func generateThreadLinks(forumLink string) {
+	page, err := http.Get(forumLink)
+	logError(err)
+	pagetext, err := ioutil.ReadAll(page.Body)
+	logError(err)
+	text := string(pagetext)
+	doc, err := html.Parse(strings.NewReader(text))
+	logError(err)
+	parseForumLinks(doc)
+}
 
+var next2NodeParse = false
+var nextNodeParse = false
+func parseForumLinks(node *html.Node) {
+	if node.Type == html.ElementNode && node.Data == "img" && node.NextSibling != nil {
+		if node.NextSibling.Data == " " {
+			next2NodeParse = true
+		}
+	}
+	if node != nil && node.NextSibling != nil {
+		if node.Data == " " && node.NextSibling.Data == "b" {
+			nextNodeParse = true
+		}
+	}
+	if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "a" {
+		if next2NodeParse && nextNodeParse {
+			threadLink := node.FirstChild.Attr[0].Val
+			threads = append(threads, threadLink)
+			next2NodeParse = false; nextNodeParse = false
+		}
+	}
+	for i := node.FirstChild; i != nil; i = i.NextSibling {
+		parseForumLinks(i)
+	}
 }
 
 func generateUniqueUsers() {
