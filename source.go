@@ -72,12 +72,12 @@ func main() {
 	ppage.Body.Close()
 	columnsAmend()
 	data := structToSlice(users)
-	file, err := os.Create("first-go-csv.csv")
+	file, err := os.Create("out-data/first-go-csv.csv")
 	logError(err)
 	writer := csv.NewWriter(file)
 	writer.WriteAll(data)
 	file.Close()
-	fmt.Println("A csv file 'first-go-csv.csv' has been written to the current working directory")
+	fmt.Println("A csv file 'first-go-csv.csv' has been written to the sub-directory 'out-data'")
 	fmt.Println("DONE! Now, check the csv file :)")
 }
 
@@ -119,11 +119,21 @@ func generateProfileData(node *html.Node, ind int) {
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Time registered" {
 		users[ind].TimeRegistered = node.NextSibling.Data[2: ]
 	} else if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "Last seen" {
-		if node.NextSibling.NextSibling.NextSibling != nil {
-			users[ind].LastSeen = (node.NextSibling.Data +
-				node.NextSibling.NextSibling.FirstChild.Data +
-				node.NextSibling.NextSibling.NextSibling.Data +
-				node.NextSibling.NextSibling.NextSibling.NextSibling.FirstChild.Data)[2: ]
+		on := node.NextSibling.NextSibling.NextSibling
+		if on != nil {
+			if on.NextSibling.NextSibling == nil {
+				users[ind].LastSeen = (node.NextSibling.Data +
+					node.NextSibling.NextSibling.FirstChild.Data +
+					on.Data +
+					on.NextSibling.FirstChild.Data)[2: ]
+			} else {
+				users[ind].LastSeen = (node.NextSibling.Data +
+					node.NextSibling.NextSibling.FirstChild.Data +
+					on.Data +
+					on.NextSibling.FirstChild.Data +
+					on.NextSibling.NextSibling.Data +
+					on.NextSibling.NextSibling.NextSibling.FirstChild.Data)[2: ]
+			}
 		} else {
 			users[ind].LastSeen = (node.NextSibling.Data + node.NextSibling.NextSibling.FirstChild.Data)[2: ]
 		}
@@ -155,6 +165,10 @@ func generateProfileData(node *html.Node, ind int) {
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
 		generateProfileData(i, ind)
 	}
+}
+
+func generateThreadLinks(link string) {
+
 }
 
 func generateUniqueUsers() {
