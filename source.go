@@ -16,22 +16,21 @@ import (
 )
 
 func main() {
-	var link string
+	//var link string
 	var forumLink string
-	fmt.Println("Enter the thread link below (to process a default link, just press Enter)")
+	/*fmt.Println("Enter the thread link below (to process a default link, just press Enter)")
 	fmt.Print("Link >>> ")
 	fmt.Scanf("%s", &link)
 	if link == "" {
 		link = "https://www.nairaland.com/7243961/christian-how-often-pray"
-	}
-	fmt.Print("Also enter forum link >>> ")
+	}*/
+	fmt.Print("Enter forum link >>> ")
 	fmt.Scanf("%s", &forumLink)
 	if forumLink == "" {
 		forumLink = "https://www.nairaland.com/education"
 	}
 	generateThreadLinks(forumLink)
 	fmt.Println(threads)
-	link0 := link
 	var page *http.Response
 	var pageTrack *http.Response
 	var ppage *http.Response
@@ -39,7 +38,10 @@ func main() {
 	var pagetext []byte
 	var text string
 	var doc *html.Node
-	x := 1
+	var i = 0
+	for j, link := range threads {
+		link0 := link
+		x := 1
 	for {
 		page, err = http.Get(link)
 		logError(err)
@@ -62,10 +64,11 @@ func main() {
 	page.Body.Close()
 	generateUniqueUsers()
 	fmt.Println("Total number of profile collected from thread:", len(users))
-	for i, val := range users {
+	for _, val := range users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
 		ppage, err = http.Get(link)
+		i++
 		if err != nil {
 			fmt.Println("Error processing profile at index", i+1, "[", err, "]")
 			continue
@@ -78,6 +81,9 @@ func main() {
 		generateProfileData(doc, i)
 	}
 	ppage.Body.Close()
+	fmt.Println("Thread", j, "processed")
+	}
+	//
 	columnsAmend()
 	data := structToSlice(users)
 	file, err := os.Create("out-data/first-go-csv.csv")
@@ -202,7 +208,7 @@ func parseForumLinks(node *html.Node) {
 	}
 	if node.Type == html.ElementNode && node.Data == "b" && node.FirstChild.Data == "a" {
 		if next2NodeParse && nextNodeParse {
-			threadLink := node.FirstChild.Attr[0].Val
+			threadLink := "https://www.nairaland.com" + node.FirstChild.Attr[0].Val
 			threads = append(threads, threadLink)
 			next2NodeParse = false; nextNodeParse = false
 		}

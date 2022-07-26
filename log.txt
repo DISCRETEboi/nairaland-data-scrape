@@ -1,0 +1,40 @@
+
+C:\DISCRETEfold_1\GOprog\nairaland-data-scrape>cd C:\DISCRETEfold_1\GOprog\nairaland-data-scrape
+
+C:\DISCRETEfold_1\GOprog\nairaland-data-scrape>go run source.go
+Enter forum link >>> https://www.nairaland.com/crime
+[https://www.nairaland.com/7247778/tributes-pour-nigerian-soldier-lit https://www.nairaland.com/7247610/onuorah-caritas-onyinye-ndlea-arrests https://www.nairaland.com/7247813/most-celebrities-making-wealth-codedly https://www.nairaland.com/7247526/nigerian-man-extradited-u.s-over https://www.nairaland.com/7247217/check-out-jail-rwanda-where https://www.nairaland.com/7247799/adeyemi-adekunle-oluwatimilehin-scammmer https://www.nairaland.com/7247553/hadiza-salami-missing-fountain-university https://www.nairaland.com/7247187/man-seen-conveying-four-tyres https://www.nairaland.com/7243331/proud-yahoo-boy-viral-ritual https://www.nairaland.com/7247266/bishop-lamor-whitehead-robbed-gunpoint https://www.nairaland.com/7247645/captain-2-soldiers-killed-after https://www.nairaland.com/7245362/bandit-warlords-zamfara-bbc-africa https://www.nairaland.com/7247589/enugu-big-girl-popular-wig https://www.nairaland.com/7247152/insecurity-solution-decisive-immediate-says https://www.nairaland.com/7247722/kidnappers-double-cross-attack-bus-passengers https://www.nairaland.com/6301342/install-car-tracking-devices-vehicles https://www.nairaland.com/7144563/borrowed-money-migo-ussd-code https://www.nairaland.com/7247069/please.....missing-person https://www.nairaland.com/7247486/woman-kills-hubby-acid-over https://www.nairaland.com/7245984/brooklyn-pastor-robbed-gunpoint-during https://www.nairaland.com/7247445/man-caught-wife-red-handed-another https://www.nairaland.com/7245351/popular-us-based-nigerian-clothier https://www.nairaland.com/7247159/kidnappers-abducts-lady-dawaki-abuja https://www.nairaland.com/7246575/bandits-abduct-abuja-couple-midnight https://www.nairaland.com/7247513/enugu-big-girl-ceo-smart https://www.nairaland.com/7246411/chess-robot-grabs-boys-hand https://www.nairaland.com/6296314/how-get-pos-machine-aviod https://www.nairaland.com/7247399/ndlea-arrests-enugu-big-girl https://www.nairaland.com/7247514/gunmen-kills-two-nigerians-canada https://www.nairaland.com/5207293/story-cult-phase-included https://www.nairaland.com/7004328/edo-bank-robbers-abandoned-cash https://www.nairaland.com/7245127/banking-sector-theft https://www.nairaland.com/7247482/uk-court-grants-senator-ekweremadus https://www.nairaland.com/7246239/insecurity-benefits-govt-everyone-bandit https://www.nairaland.com/7247105/tinubus-female-relation-accuses-him https://www.nairaland.com/7245847/police-officer-caught-demanding-collecting https://www.nairaland.com/7247466/business-mogul-held-oin-court https://www.nairaland.com/7247376/no-day-compare-me-mad https://www.nairaland.com/7245704/five-nairalanders-robbed-me https://www.nairaland.com/7247250/how-true-picture-attached https://www.nairaland.com/7246656/okowa-please-something-fake-criminal https://www.nairaland.com/7247338/bribe-seeking-police-officer-says-dont https://www.nairaland.com/7247428/terrorists-release-3-more-kidnapped https://www.nairaland.com/7246835/nigeria-finally-happened-me https://www.nairaland.com/7246987/abuja-security-alert https://www.nairaland.com/7247380/insecurity-solution-decisive-immediate-peter https://www.nairaland.com/7163449/enaohwo-efeoghene-serial-scammer-met https://www.nairaland.com/7247357/drama-lagos-police-refund-n50000 https://www.nairaland.com/7247352/terrorist-attacks-president-buhari-special https://www.nairaland.com/7236816/19-year-old-precious-agbokhade-raped-stabbed https://www.nairaland.com/7245606/man-shot-after-allegedly-crushing https://www.nairaland.com/7246459/two-men-caught-arrested-stealing https://www.nairaland.com/7239230/broke-windows-rescue-man-set https://www.nairaland.com/7245641/police-kill-two-bandits-kaduna https://www.nairaland.com/7247056/chukwuemeka-victor-dike-scammer https://www.nairaland.com/7246563/operation-safe-haven-nigerian-troops https://www.nairaland.com/7246921/freed-train-attack-victim-narrate https://www.nairaland.com/7246843/abuja-kaduna-train-attack-3-kidnapped https://www.nairaland.com/7246390/moment-pastor-robbed-gunpoint-while https://www.nairaland.com/7172638/marriage-not-die-affair-viewers]
+The processing of the webpage at /7247778/tributes-pour-nigerian-soldier-lit was successful!
+Total number of profile collected from thread: 3
+Processing profile 1 with username janefblog ...
+Processing profile 2 with username Karlovich ...
+Processing profile 3 with username princepeter566 ...
+panic: runtime error: index out of range [3] with length 3
+
+goroutine 1 [running]:
+main.generateProfileData(0xc000227110, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:163 +0xca5
+main.generateProfileData(0xc0002270a0, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000227030, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226fc0, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226f50, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226ee0, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226e70, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226e00, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226a10, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.generateProfileData(0xc000226930, 0x3)
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:180 +0xc56
+main.main()
+        C:/DISCRETEfold_1/GOprog/nairaland-data-scrape/source.go:81 +0x13cd
+exit status 2
+
+C:\DISCRETEfold_1\GOprog\nairaland-data-scrape>PAUSE
+Press any key to continue . . .
