@@ -30,7 +30,7 @@ func main() {
 		forumLink = "https://www.nairaland.com/education"
 	}
 	generateThreadLinks(forumLink)
-	fmt.Println(threads)
+	//fmt.Println(threads)
 	var page *http.Response
 	var pageTrack *http.Response
 	var ppage *http.Response
@@ -39,6 +39,7 @@ func main() {
 	var text string
 	var doc *html.Node
 	var i = 0
+	var usersTrack []User
 	for j, link := range threads {
 		link0 := link
 		x := 1
@@ -62,15 +63,22 @@ func main() {
 		x++
 	}
 	page.Body.Close()
-	generateUniqueUsers()
+	users = generateUniqueUsers(users)
+	fmt.Println("sub_users-1:", sub_users)
+	//sub_users = generateUniqueUsers(sub_users)
+	//fmt.Println("sub_users-2:", sub_users)
+	setDiff(users, usersTrack)
+	fmt.Println("sub_users-2:", sub_users)
+	fmt.Println(len(users), len(sub_users), users, sub_users)
 	fmt.Println("Total number of profile collected from thread:", len(users))
-	for _, val := range users {
+	usersTrack = users
+	for _, val := range sub_users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
 		link = val.ProfileLink
 		ppage, err = http.Get(link)
-		i++
 		if err != nil {
 			fmt.Println("Error processing profile at index", i+1, "[", err, "]")
+			i++
 			continue
 		}
 		pagetext, err = ioutil.ReadAll(ppage.Body)
@@ -78,9 +86,11 @@ func main() {
 		text = string(pagetext)
 		doc, err = html.Parse(strings.NewReader(text))
 		logError(err)
-		generateProfileData(doc, j)
+		generateProfileData(doc, i)
+		i++
 	}
 	ppage.Body.Close()
+	sub_users = []User{}
 	fmt.Println("Thread", j, "processed")
 	}
 	//
@@ -96,6 +106,7 @@ func main() {
 }
 
 var users []User
+var sub_users []User
 var user_profile_link string
 var user_name string
 
@@ -120,6 +131,7 @@ func generateUsersData(node *html.Node) {
 			user_profile_link = "https://www.nairaland.com" + node.Attr[0].Val
 			user_name = node.FirstChild.Data
 			users = append(users, User{user_profile_link, user_name, "", "", "", "", "", "", "", "", ""})
+			sub_users = append(sub_users, User{user_profile_link, user_name, "", "", "", "", "", "", "", "", ""})
 		}
 	}
 	for i := node.FirstChild; i != nil; i = i.NextSibling {
@@ -218,16 +230,18 @@ func parseForumLinks(node *html.Node) {
 	}
 }
 
-func generateUniqueUsers() {
+func generateUniqueUsers(usersSlice []User) []User {
 	unique_users := []User{}
-	for _, val := range users {
+	for _, val := range usersSlice {
 		if sliceContains(unique_users, val) {
 			// do nothing
 		} else {
 			unique_users = append(unique_users, val)
 		}
 	}
-	users = unique_users
+	//users = unique_users
+	//sub_users = unique_users
+	return unique_users
 }
 
 func sliceContains(suser []User, user User) bool {
@@ -264,7 +278,22 @@ func columnsAmend() {
 	}
 }
 
-
+func setDiff(major []User, minor []User) {
+	var track bool
+	sub_users = []User{}
+	for _, i := range major {
+		track = true
+		for _, j := range minor {
+			if i == j {
+				track = false
+				break
+			}
+		}
+		if track == true {
+			sub_users = append(sub_users, i)
+		}
+	}
+}
 
 
 

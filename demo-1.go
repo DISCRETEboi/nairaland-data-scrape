@@ -2,13 +2,15 @@ package main
 
 import (
 	"fmt"
-	"regexp"
+	//"regexp"
 )
 
 func main() {
-	stri := "mateen (304)"
-	regex, _ := regexp.Compile("\\([0-9]+\\)")
-	res := regex.FindString(stri)
-	res2 := regexp.MatchString(stri)
-	fmt.Println(res, res2)
+	var x = (Food{"rice", 2} == Food{"rice", 3})
+	fmt.Println(x)
+}
+
+type Food struct {
+	Name string
+	Rating int
 }
