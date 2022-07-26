@@ -78,7 +78,7 @@ func main() {
 		text = string(pagetext)
 		doc, err = html.Parse(strings.NewReader(text))
 		logError(err)
-		generateProfileData(doc, i)
+		generateProfileData(doc, j)
 	}
 	ppage.Body.Close()
 	fmt.Println("Thread", j, "processed")
