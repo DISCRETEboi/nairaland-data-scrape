@@ -16,21 +16,13 @@ import (
 )
 
 func main() {
-	//var link string
 	var forumLink string
-	/*fmt.Println("Enter the thread link below (to process a default link, just press Enter)")
-	fmt.Print("Link >>> ")
-	fmt.Scanf("%s", &link)
-	if link == "" {
-		link = "https://www.nairaland.com/7243961/christian-how-often-pray"
-	}*/
 	fmt.Print("Enter forum link >>> ")
 	fmt.Scanf("%s", &forumLink)
 	if forumLink == "" {
 		forumLink = "https://www.nairaland.com/education"
 	}
 	generateThreadLinks(forumLink)
-	//fmt.Println(threads)
 	var page *http.Response
 	var pageTrack *http.Response
 	var ppage *http.Response
@@ -64,13 +56,9 @@ func main() {
 	}
 	page.Body.Close()
 	users = generateUniqueUsers(users)
-	fmt.Println("sub_users-1:", sub_users)
-	//sub_users = generateUniqueUsers(sub_users)
-	//fmt.Println("sub_users-2:", sub_users)
 	setDiff(users, usersTrack)
-	fmt.Println("sub_users-2:", sub_users)
-	fmt.Println(len(users), len(sub_users), users, sub_users)
-	fmt.Println("Total number of profile collected from thread:", len(users))
+	fmt.Println("Total number of profile collected from thread [", link, "]:", len(sub_users))
+	fmt.Println("Total number of profile collected [cumulative]:", len(users))
 	usersTrack = users
 	for _, val := range sub_users {
 		fmt.Println("Processing profile", i+1, "with username", users[i].Name, "...")
@@ -91,9 +79,8 @@ func main() {
 	}
 	ppage.Body.Close()
 	sub_users = []User{}
-	fmt.Println("Thread", j, "processed")
+	fmt.Println("Thread", j+1, "processed")
 	}
-	//
 	columnsAmend()
 	data := structToSlice(users)
 	file, err := os.Create("out-data/first-go-csv.csv")
@@ -240,7 +227,6 @@ func generateUniqueUsers(usersSlice []User) []User {
 		}
 	}
 	//users = unique_users
-	//sub_users = unique_users
 	return unique_users
 }
 
